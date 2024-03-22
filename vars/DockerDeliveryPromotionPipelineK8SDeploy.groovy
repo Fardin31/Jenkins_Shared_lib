@@ -74,7 +74,7 @@ def call(body) {
                     }
                     sh 'echo Image pulled from DEV'
                     sh 'echo Tagging Docker image from Dev to QA'
-                    sh "docker tag ${DOCKER_REGISTRY_URL}/dev:${env.COMMITID} ${QA_IMAGE_NAME}:${env.COMMITID}"
+                    sh "docker tag ${DEV_IMAGE_NAME}:${env.COMMITID} ${QA_IMAGE_NAME}:${env.COMMITID}"
                     script {
                         docker.withRegistry("${DOCKER_REGISTRY_URL}/qa", "${env.QA_CREDENTIALS}") {
                             docker.image("${QA_IMAGE_NAME}:${env.COMMITID}").push()
@@ -82,7 +82,7 @@ def call(body) {
                     }
                     sh 'echo Image Pushed to QA'
                     sh 'echo Deleting Local docker Images'
-                    sh "docker rmi ${DOCKER_REGISTRY_URL}/qa:${env.COMMITID}"
+                    sh "docker rmi ${QA_IMAGE_NAME}:${env.COMMITID}"
                 }
             }
 
@@ -180,22 +180,22 @@ def call(body) {
             }
         }
     }
+}
 
-    def deployOnK8s(String KUBE_CONFIG, String ACCOUNT, String COMMIT) {
-        withKubeConfig(credentialsId: "${KUBE_CONFIG}", restrictKubeConfigAccess: true) {
-            sh "echo Deploying application on ${ACCOUNT} K8S cluster"
-            sh "echo Replacing K8S manifests files with sed...."
-            sh "sed -i -e 's/{{ACCOUNT}}/${ACCOUNT}/g' -e 's/{{COMMITID}}/${COMMIT}/g' KUBE/*"
-            sh "echo K8S manifests files after replace with sed ..."
-            sh "cat KUBE/deployment.yaml"
-            sh "kubectl apply -f KUBE/."
-        }
+def deployOnK8s(String KUBE_CONFIG, String ACCOUNT, String COMMIT) {
+    withKubeConfig(credentialsId: "${KUBE_CONFIG}", restrictKubeConfigAccess: true) {
+        sh "echo Deploying application on ${ACCOUNT} K8S cluster"
+        sh "echo Replacing K8S manifests files with sed...."
+        sh "sed -i -e 's/{{ACCOUNT}}/${ACCOUNT}/g' -e 's/{{COMMITID}}/${COMMIT}/g' KUBE/*"
+        sh "echo K8S manifests files after replace with sed ..."
+        sh "cat KUBE/deployment.yaml"
+        sh "kubectl apply -f KUBE/."
     }
+}
 
-    post {
-        always {
-            echo 'Deleting Project now !! '
-            deleteDir()
-        }
+post {
+    always {
+        echo 'Deleting Project now !! '
+        deleteDir()
     }
 }
