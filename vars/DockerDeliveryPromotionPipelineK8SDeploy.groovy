@@ -137,16 +137,16 @@ def call(body) {
                     sh "docker rmi ${PROD_IMAGE_NAME}:${env.COMMITID}"
                 }
             }
-        }
-
-        stage('DEPLOY TO K8S DEV') {
+            stage('DEPLOY TO K8S DEV') {
             when {
                 expression {
                     params.account == 'dev'
                 }
             }
             steps {
+
                 deployOnK8s(env.DEV_CONFIG, env.ACCOUNT, env.COMMITID)
+                
             }
         }
         stage('DEPLOY TO K8S QA') {
@@ -156,7 +156,9 @@ def call(body) {
                 }
             }
             steps {
+
                 deployOnK8s(env.QA_CONFIG, env.ACCOUNT, env.COMMITID)
+
             }
         }
         stage('DEPLOY TO K8S STAGE') {
@@ -166,7 +168,9 @@ def call(body) {
                 }
             }
             steps {
+
                 deployOnK8s(env.STAGE_CONFIG, env.ACCOUNT, env.COMMITID)
+
             }
         }
         stage('DEPLOY TO K8S PROD') {
@@ -176,10 +180,13 @@ def call(body) {
                 }
             }
             steps {
+
                 deployOnK8s(env.PROD_CONFIG, env.ACCOUNT, env.COMMITID)
+
             }
         }
     }
+  }
 }
 
 def deployOnK8s(String KUBE_CONFIG, String ACCOUNT, String COMMIT) {
