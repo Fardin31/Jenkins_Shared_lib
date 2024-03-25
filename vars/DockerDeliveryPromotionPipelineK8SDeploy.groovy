@@ -49,6 +49,7 @@ def call(body) {
                 }
                 steps {
                     echo "Building Docker Image Logging in to Docker Hub & Pushing the Image"
+                    sh 'echo config.platform'
                     script {
                         def app = docker.build("${DEV_IMAGE_NAME}:${env.COMMITID}")
                         docker.withRegistry("${DOCKER_REGISTRY_URL}/${ACCOUNT}", "${env.DEV_CREDENTIALS}") {
