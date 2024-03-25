@@ -15,7 +15,7 @@ def call(body) {
         environment {
             //Commnon
             ACCOUNT               = "${params.account}"
-            COMMITID              = "${params.commit_id}"
+            COMMITID              = "${GIT_COMMIT}"
             DOCKER_REGISTRY_URL   = "https://registry.hub.docker.com/fardin31"
 
             //FOR DEV
