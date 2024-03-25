@@ -30,12 +30,12 @@ def call(body) {
             QA_CONFIG             = "qa_kube_config"
 
             //FOR STAGE
-            STAGE_IMAGE_NAME      = "fardin31/stage"
+            STAGE_IMAGE_NAME      = "registry.hub.docker.com/fardin31/stage"
             STAGE_CREDENTIALS     = "stage_dh_cred"
             STAGE_CONFIG          = "stage_kube_config"
 
             //FOR PROD
-            PROD_IMAGE_NAME       = "fardin31/prod"
+            PROD_IMAGE_NAME       = "registry.hub.docker.com/fardin31/prod"
             PROD_CREDENTIALS      = "prod_dh_cred"
             PROD_CONFIG           = "prod_kube_config"
         }
