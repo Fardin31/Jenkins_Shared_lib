@@ -49,14 +49,14 @@ def call(body) {
                 steps {
                     echo "Building Docker Image Logging in to Docker Hub & Pushing the Image"
                     script {
-                        def app = docker.build("${DEV_IMAGE_NAME}:${env.COMMITID}")
+                        def app = docker.build("${DEV_IMAGE_NAME} + ':' + ${env.COMMITID}")
                         docker.withRegistry("${DOCKER_REGISTRY_URL}/${ACCOUNT}", "${env.DEV_CREDENTIALS}") {
                             app.push()
                         }
                     }
                     sh 'echo Image Pushed to DEV'
                     sh 'echo Deleting Local docker DEV Image'
-                    sh "docker rmi ${DEV_IMAGE_NAME}:${env.COMMITID}"
+                    sh "docker rmi -f ${env.DEV_IMAGE_NAME}:${env.COMMITID}"
                 }
             }
 
@@ -69,20 +69,20 @@ def call(body) {
                 steps {
                     script {
                         docker.withRegistry("${DOCKER_REGISTRY_URL}/dev", "${env.DEV_CREDENTIALS}") {
-                            docker.image("${DEV_IMAGE_NAME}:${env.COMMITID}").pull()
+                            docker.image("${DEV_IMAGE_NAME} + ':' + ${env.COMMITID}").pull()
                         }
                     }
                     sh 'echo Image pulled from DEV'
                     sh 'echo Tagging Docker image from Dev to QA'
-                    sh "docker tag ${DEV_IMAGE_NAME}:${env.COMMITID} ${QA_IMAGE_NAME}:${env.COMMITID}"
+                    sh "docker tag ${DEV_IMAGE_NAME} + ':' + ${env.COMMITID} ${QA_IMAGE_NAME} + ':' + ${env.COMMITID}"
                     script {
                         docker.withRegistry("${DOCKER_REGISTRY_URL}/${ACCOUNT}", "${env.QA_CREDENTIALS}") {
-                            docker.image("${QA_IMAGE_NAME}:${env.COMMITID}").push()
+                            docker.image("${QA_IMAGE_NAME} + ':' + ${env.COMMITID}").push()
                         }
                     }
                     sh 'echo Image Pushed to QA'
                     sh 'echo Deleting Local docker Images'
-                    sh "docker rmi ${QA_IMAGE_NAME}:${env.COMMITID}"
+                    sh "docker rmi -f ${QA_IMAGE_NAME} + ':' + ${env.COMMITID}"
                 }
             }
 
@@ -95,20 +95,20 @@ def call(body) {
                 steps {
                     script {
                         docker.withRegistry("${DOCKER_REGISTRY_URL}/qa", "${env.QA_CREDENTIALS}") {
-                            docker.image("${QA_IMAGE_NAME}:${env.COMMITID}").pull()
+                            docker.image("${QA_IMAGE_NAME} + ':' + ${env.COMMITID}").pull()
                         }
                     }
                     sh 'echo Image pulled from QA'
                     sh 'echo Tagging Docker image from QA to Stage'
-                    sh "docker tag ${QA_IMAGE_NAME}:${env.COMMITID} ${STAGE_IMAGE_NAME}:${env.COMMITID}"
+                    sh "docker tag ${QA_IMAGE_NAME} + ':' + ${env.COMMITID} ${STAGE_IMAGE_NAME} + ':' + ${env.COMMITID}"
                     script {
                         docker.withRegistry("${DOCKER_REGISTRY_URL}/stage", "${env.STAGE_CREDENTIALS}") {
-                            docker.image("${STAGE_IMAGE_NAME}:${env.COMMITID}").push()
+                            docker.image("${STAGE_IMAGE_NAME} + ':' + ${env.COMMITID}").push()
                         }
                     }
                     sh 'echo Image Pushed to STAGE'
                     sh 'echo Deleting Local docker Images'
-                    sh "docker rmi ${STAGE_IMAGE_NAME}:${env.COMMITID}"
+                    sh "docker rmi -f ${env.STAGE_IMAGE_NAME}:${env.COMMITID}"
                 }
             }
 
@@ -121,20 +121,20 @@ def call(body) {
                 steps {
                     script {
                         docker.withRegistry("${DOCKER_REGISTRY_URL}/stage", "${env.STAGE_CREDENTIALS}") {
-                            docker.image("${STAGE_IMAGE_NAME}:${env.COMMITID}").pull()
+                            docker.image("${STAGE_IMAGE_NAME} + ':' + ${env.COMMITID}").pull()
                         }
                     }
                     sh 'echo Image pulled from QA'
                     sh 'echo Tagging Docker image from stage to prod'
-                    sh "docker tag ${STAGE_IMAGE_NAME}:${env.COMMITID} ${PROD_IMAGE_NAME}:${env.COMMITID}"
+                    sh "docker tag ${STAGE_IMAGE_NAME} + ':' + ${env.COMMITID} ${PROD_IMAGE_NAME} + ':' + ${env.COMMITID}"
                     script {
                         docker.withRegistry("${DOCKER_REGISTRY_URL}/prod", "${env.PROD_CREDENTIALS}") {
-                            docker.image("${PROD_IMAGE_NAME}:${env.COMMITID}").push()
+                            docker.image("${PROD_IMAGE_NAME} + ':' + ${env.COMMITID}").push()
                         }
                     }
                     sh 'echo Image Pushed to Prod'
                     sh 'echo Deleting Local docker Images'
-                    sh "docker rmi ${PROD_IMAGE_NAME}:${env.COMMITID}"
+                    sh "docker rmi -f ${env.PROD_IMAGE_NAME} + ':' + ${COMMITID}"
                 }
             }
             stage('DEPLOY TO K8S DEV') {
