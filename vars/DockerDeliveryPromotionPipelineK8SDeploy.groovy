@@ -68,7 +68,7 @@ def call(body) {
                 }
                 steps {
                     script {
-                        docker.withRegistry("${DOCKER_REGISTRY_URL}/${ACCOUNT}", "${env.QA_CREDENTIALS}") {
+                        docker.withRegistry("${DOCKER_REGISTRY_URL}/dev", "${env.DEV_CREDENTIALS}") {
                             docker.image("${DEV_IMAGE_NAME}:${env.COMMITID}").pull()
                         }
                     }
@@ -76,7 +76,7 @@ def call(body) {
                     sh 'echo Tagging Docker image from Dev to QA'
                     sh "docker tag ${DEV_IMAGE_NAME}:${env.COMMITID} ${QA_IMAGE_NAME}:${env.COMMITID}"
                     script {
-                        docker.withRegistry("${DOCKER_REGISTRY_URL}/qa", "${env.QA_CREDENTIALS}") {
+                        docker.withRegistry("${DOCKER_REGISTRY_URL}/${ACCOUNT}", "${env.QA_CREDENTIALS}") {
                             docker.image("${QA_IMAGE_NAME}:${env.COMMITID}").push()
                         }
                     }
@@ -128,7 +128,7 @@ def call(body) {
                     sh 'echo Tagging Docker image from stage to prod'
                     sh "docker tag ${STAGE_IMAGE_NAME}:${env.COMMITID} ${PROD_IMAGE_NAME}:${env.COMMITID}"
                     script {
-                        docker.withRegistry("${DOCKER_REGISTRY_URL}/stage", "${env.PROD_CREDENTIALS}") {
+                        docker.withRegistry("${DOCKER_REGISTRY_URL}/prod", "${env.PROD_CREDENTIALS}") {
                             docker.image("${PROD_IMAGE_NAME}:${env.COMMITID}").push()
                         }
                     }
