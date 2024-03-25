@@ -17,14 +17,15 @@ def call(body) {
             ACCOUNT               = "${params.account}"
             COMMITID              = "${GIT_COMMIT}"
             DOCKER_REGISTRY_URL   = "https://registry.hub.docker.com/fardin31"
+            REGISTRY              = "registry.hub.docker.com/fardin31"
 
             //FOR DEV
-            DEV_IMAGE_NAME        = "fardin31/dev"
+            DEV_IMAGE_NAME        = "registry.hub.docker.com/fardin31/dev"
             DEV_CREDENTIALS       = "dev_dh_cred"
             DEV_CONFIG            = "dev_kube_config"
 
             //FOR QA
-            QA_IMAGE_NAME         = "fardin31/qa"
+            QA_IMAGE_NAME         = "registry.hub.docker.com/fardin31/qa"
             QA_CREDENTIALS        = "qa_dh_cred"
             QA_CONFIG             = "qa_kube_config"
 
@@ -74,7 +75,7 @@ def call(body) {
                     }
                     sh 'echo Image pulled from DEV'
                     sh 'echo Tagging Docker image from Dev to QA'
-                    sh "docker tag :${DOCKER_REGISTRY_URL}/dev:${env.COMMITID} ${QA_IMAGE_NAME}:${env.COMMITID}"
+                    sh "docker tag ${DEV_IMAGE_NAME}:${env.COMMITID} ${QA_IMAGE_NAME}:${env.COMMITID}"
                     script {
                         docker.withRegistry("${DOCKER_REGISTRY_URL}/${ACCOUNT}", "${env.QA_CREDENTIALS}") {
                             docker.image("${QA_IMAGE_NAME}:${env.COMMITID}").push()
