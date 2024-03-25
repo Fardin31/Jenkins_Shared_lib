@@ -74,7 +74,7 @@ def call(body) {
                     }
                     sh 'echo Image pulled from DEV'
                     sh 'echo Tagging Docker image from Dev to QA'
-                    sh "docker tag ${DEV_IMAGE_NAME}:${env.COMMITID} ${QA_IMAGE_NAME}:${env.COMMITID}"
+                    sh "docker tag :${DOCKER_REGISTRY_URL}/dev:${env.COMMITID} ${QA_IMAGE_NAME}:${env.COMMITID}"
                     script {
                         docker.withRegistry("${DOCKER_REGISTRY_URL}/${ACCOUNT}", "${env.QA_CREDENTIALS}") {
                             docker.image("${QA_IMAGE_NAME}:${env.COMMITID}").push()
